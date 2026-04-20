@@ -45,7 +45,7 @@
     </style>
   </head>
   <body>
-    <audio id="bgm" src="audio/OneRepublic - Counting Stars.mp3" loop></audio>
+    <audio id="bgm" loop></audio>
 
     <div id="musicPopup">
       <h2>Music is featured on this site</h2>
@@ -64,12 +64,26 @@
     </h2>
 
     <script>
+      const songs = [
+        "audio/OneRepublic - Counting Stars.mp3",
+        "audio/Tame Impala - The Less I Know The Better.mp3",
+        "audio/Michael Jackson - Thriller.mp3"
+      ];
+
+      function getRandomSong() {
+        const mp3s = songs.filter(s => s.toLowerCase().endsWith(".mp3"));
+        return mp3s[Math.floor(Math.random() * mp3s.length)];
+      }
+
       const popup = document.getElementById("musicPopup");
       const bgm = document.getElementById("bgm");
+      bgm.src = getRandomSong();
+
       document.getElementById("yesBtn").onclick = function () {
         bgm.play();
         popup.remove();
       };
+
       document.getElementById("noBtn").onclick = function () {
         popup.remove();
       };
