@@ -57,7 +57,8 @@
 
   <hr>
 
-  <button onclick="signupWithGoogle()">Sign up with Google</button>
+  <button onclick="signupWithGoogle()">Sign up with Google</button><br>
+  <button onclick="signupWithGitHub()">Sign up with GitHub</button>
 
   <script>
     function signup() {
@@ -71,6 +72,13 @@
 
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(() => window.location.href = "home.html")
+        .catch(err => alert(err.message));
+    }
+
+    function signupWithGitHub() {
+      const provider = new firebase.auth.GithubAuthProvider();
       firebase.auth().signInWithPopup(provider)
         .then(() => window.location.href = "home.html")
         .catch(err => alert(err.message));
