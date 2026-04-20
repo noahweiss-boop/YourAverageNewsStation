@@ -1,194 +1,221 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Your Average News Station (YANS)</title>
-    <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Average News Station (YANS)</title>
+  <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
 
-    <!-- Google reCAPTCHA gate check -->
-    <script>
-      if (!document.cookie.includes("yansHuman=1")) {
-        window.location.href = "index.html";
-      }
-    </script>
+  <!-- reCAPTCHA gate check -->
+  <script>
+    if (!document.cookie.includes("yansHuman=1")) {
+      window.location.href = "index.html";
+    }
+  </script>
 
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
 
-    <style>
-      body {
-        padding: 5px;
-        background-color: #111111;
-        color: white;
-        font-family: 'Yu Gothic UI', sans-serif;
-      }
+  <!-- Your Firebase config -->
+  <script src="firebase.js"></script>
 
-      /* Popup */
-      #musicPopup {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        color: black;
-        padding: 20px;
-        border: 1px solid #CCC;
-        width: 300px;
-        text-align: center;
-        box-shadow: 0 0 20px rgba(0,0,0,0.3);
-        z-index: 9999;
-      }
+  <!-- Auth protection + logout -->
+  <script src="home.js"></script>
 
-      .popup-btn {
-        padding: 10px 20px;
-        border: 1px solid #CCC;
-        cursor: pointer;
-        margin: 5px;
-      }
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-      #yesBtn { background: #28a745; color: white; }
-      #noBtn { background: #cc0000; color: white; }
+  <style>
+    body {
+      padding: 5px;
+      background-color: #111111;
+      color: white;
+      font-family: 'Yu Gothic UI', sans-serif;
+    }
 
-      /* Control Panel */
-      #musicControls {
-        position: fixed;
-        bottom: 15px;
-        right: 15px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-        padding: 10px;
-        display: none; /* hidden until Sure! */
-        gap: 10px;
-        z-index: 9999;
-      }
+    /* Popup */
+    #musicPopup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      color: black;
+      padding: 20px;
+      border: 1px solid #CCC;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      z-index: 9999;
+    }
 
-      .ctrl-btn {
-        background: #222;
-        color: white;
-        border: 1px solid #444;
-        padding: 8px;
-        cursor: pointer;
-        font-size: 20px;
-      }
+    .popup-btn {
+      padding: 10px 20px;
+      border: 1px solid #CCC;
+      cursor: pointer;
+      margin: 5px;
+    }
 
-      .ctrl-btn:hover { background: #333; }
+    #yesBtn { background: #28a745; color: white; }
+    #noBtn { background: #cc0000; color: white; }
 
-      .material-icons {
-        font-size: 22px;
-        vertical-align: middle;
-      }
-    </style>
-  </head>
+    /* Control Panel */
+    #musicControls {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      padding: 10px;
+      display: none;
+      gap: 10px;
+      z-index: 9999;
+    }
 
-  <body>
-    <audio id="bgm" loop></audio>
+    .ctrl-btn {
+      background: #222;
+      color: white;
+      border: 1px solid #444;
+      padding: 8px;
+      cursor: pointer;
+      font-size: 20px;
+    }
 
-    <div id="musicPopup">
-      <h2>Music is featured on this site</h2>
-      <p>Would you like to listen to our selected music?</p>
-      <button id="yesBtn" class="popup-btn">Sure!</button>
-      <button id="noBtn" class="popup-btn">No, thanks.</button>
-    </div>
+    .ctrl-btn:hover { background: #333; }
 
-    <img src="images/YANS_LOGO.svg" alt="The YANS logo, blue">
+    .material-icons {
+      font-size: 22px;
+      vertical-align: middle;
+    }
 
-    <h2>
-      Welcome to Your Average News Station, your all-in-one website for everything
-      <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #1974D2">average</a>!
-    </h2>
+    #logoutBtn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: #cc0000;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
 
-    <!-- Control Panel -->
-    <div id="musicControls">
-      <button id="volDownBtn" class="ctrl-btn"><span class="material-icons">volume_down</span></button>
-      <button id="volUpBtn" class="ctrl-btn"><span class="material-icons">volume_up</span></button>
-      <button id="prevBtn" class="ctrl-btn"><span class="material-icons">skip_previous</span></button>
-      <button id="restartBtn" class="ctrl-btn"><span class="material-icons">replay</span></button>
-      <button id="pauseBtn" class="ctrl-btn"><span class="material-icons">pause</span></button>
-      <button id="nextBtn" class="ctrl-btn"><span class="material-icons">skip_next</span></button>
-    </div>
+<body>
+  <!-- Logout -->
+  <button id="logoutBtn" onclick="logout()">Logout</button>
 
-    <script>
-      const songs = [
-        "audio/OneRepublic - Counting Stars.mp3",
-        "audio/Tame Impala - The Less I Know The Better.mp3",
-        "audio/Michael Jackson - Thriller.mp3"
-      ];
+  <!-- Firebase welcome -->
+  <h2 id="welcome">Loading...</h2>
 
-      let lastIndex = -1;
-      let currentIndex = -1;
+  <!-- Music -->
+  <audio id="bgm" loop></audio>
 
-      function getRandomSongIndex() {
-        let newIndex;
-        do {
-          newIndex = Math.floor(Math.random() * songs.length);
-        } while (newIndex === lastIndex);
-        return newIndex;
-      }
+  <div id="musicPopup">
+    <h2>Music is featured on this site</h2>
+    <p>Would you like to listen to our selected music?</p>
+    <button id="yesBtn" class="popup-btn">Sure!</button>
+    <button id="noBtn" class="popup-btn">No, thanks.</button>
+  </div>
 
-      const bgm = document.getElementById("bgm");
-      const popup = document.getElementById("musicPopup");
-      const controls = document.getElementById("musicControls");
+  <img src="images/YANS_LOGO.svg" alt="The YANS logo, blue">
 
-      // Preload first song WITHOUT playing
-      let firstIndex = getRandomSongIndex();
-      bgm.src = songs[firstIndex];
+  <h2>
+    Welcome to Your Average News Station, your all-in-one website for everything
+    <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #1974D2">average</a>!
+  </h2>
 
-      function loadSong(index) {
-        currentIndex = index;
-        lastIndex = index;
-        bgm.src = songs[index];
+  <!-- Control Panel -->
+  <div id="musicControls">
+    <button id="volDownBtn" class="ctrl-btn"><span class="material-icons">volume_down</span></button>
+    <button id="volUpBtn" class="ctrl-btn"><span class="material-icons">volume_up</span></button>
+    <button id="prevBtn" class="ctrl-btn"><span class="material-icons">skip_previous</span></button>
+    <button id="restartBtn" class="ctrl-btn"><span class="material-icons">replay</span></button>
+    <button id="pauseBtn" class="ctrl-btn"><span class="material-icons">pause</span></button>
+    <button id="nextBtn" class="ctrl-btn"><span class="material-icons">skip_next</span></button>
+  </div>
+
+  <script>
+    const songs = [
+      "audio/OneRepublic - Counting Stars.mp3",
+      "audio/Tame Impala - The Less I Know The Better.mp3",
+      "audio/Michael Jackson - Thriller.mp3"
+    ];
+
+    let lastIndex = -1;
+    let currentIndex = -1;
+
+    function getRandomSongIndex() {
+      let newIndex;
+      do {
+        newIndex = Math.floor(Math.random() * songs.length);
+      } while (newIndex === lastIndex);
+      return newIndex;
+    }
+
+    const bgm = document.getElementById("bgm");
+    const popup = document.getElementById("musicPopup");
+    const controls = document.getElementById("musicControls");
+
+    // Preload first song WITHOUT playing
+    let firstIndex = getRandomSongIndex();
+    bgm.src = songs[firstIndex];
+
+    function loadSong(index) {
+      currentIndex = index;
+      lastIndex = index;
+      bgm.src = songs[index];
+      bgm.play();
+    }
+
+    document.getElementById("yesBtn").onclick = () => {
+      loadSong(firstIndex);
+      popup.remove();
+      controls.style.display = "flex";
+    };
+
+    document.getElementById("noBtn").onclick = () => {
+      popup.remove();
+      controls.remove();
+    };
+
+    document.getElementById("volDownBtn").onclick = () => {
+      bgm.volume = Math.max(0, bgm.volume - 0.1);
+    };
+
+    document.getElementById("volUpBtn").onclick = () => {
+      bgm.volume = Math.min(1, bgm.volume + 0.1);
+    };
+
+    document.getElementById("prevBtn").onclick = () => {
+      currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+      loadSong(currentIndex);
+    };
+
+    document.getElementById("restartBtn").onclick = () => {
+      bgm.currentTime = 0;
+      bgm.play();
+    };
+
+    document.getElementById("pauseBtn").onclick = () => {
+      if (bgm.paused) {
         bgm.play();
+        pauseBtn.innerHTML = '<span class="material-icons">pause</span>';
+      } else {
+        bgm.pause();
+        pauseBtn.innerHTML = '<span class="material-icons">play_arrow</span>';
       }
+    };
 
-      document.getElementById("yesBtn").onclick = () => {
-        loadSong(firstIndex); // NOW music starts
-        popup.remove();
-        controls.style.display = "flex";
-      };
+    document.getElementById("nextBtn").onclick = () => {
+      let newIndex = getRandomSongIndex();
+      loadSong(newIndex);
+    };
 
-      document.getElementById("noBtn").onclick = () => {
-        popup.remove();
-        controls.remove();
-      };
-
-      // Buttons
-      document.getElementById("volDownBtn").onclick = () => {
-        bgm.volume = Math.max(0, bgm.volume - 0.1);
-      };
-
-      document.getElementById("volUpBtn").onclick = () => {
-        bgm.volume = Math.min(1, bgm.volume + 0.1);
-      };
-
-      document.getElementById("prevBtn").onclick = () => {
-        currentIndex = (currentIndex - 1 + songs.length) % songs.length;
-        loadSong(currentIndex);
-      };
-
-      document.getElementById("restartBtn").onclick = () => {
-        bgm.currentTime = 0;
-        bgm.play();
-      };
-
-      document.getElementById("pauseBtn").onclick = () => {
-        if (bgm.paused) {
-          bgm.play();
-          pauseBtn.innerHTML = '<span class="material-icons">pause</span>';
-        } else {
-          bgm.pause();
-          pauseBtn.innerHTML = '<span class="material-icons">play_arrow</span>';
-        }
-      };
-
-      document.getElementById("nextBtn").onclick = () => {
-        let newIndex = getRandomSongIndex();
-        loadSong(newIndex);
-      };
-
-      bgm.onended = () => {
-        let newIndex = getRandomSongIndex();
-        loadSong(newIndex);
-      };
-    </script>
-  </body>
+    bgm.onended = () => {
+      let newIndex = getRandomSongIndex();
+      loadSong(newIndex);
+    };
+  </script>
+</body>
 </html>
