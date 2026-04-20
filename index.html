@@ -7,12 +7,72 @@
     <style>
       body {
         padding: 5px;
+        background-color: #111111;
+        color: white;
+        font-family: 'Yu Gothic UI', sans-serif;
+      }
+      #musicPopup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        color: black;
+        padding: 20px;
+        border: 1px solid #CCC;
+        border-radius: 0px;
+        width: 300px;
+        text-align: center;
+        font-family: 'Yu Gothic UI', sans-serif;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        z-index: 9999;
+      }
+      .popup-btn {
+        padding: 10px 20px;
+        border: 1px solid #CCC;
+        border-radius: 0px;
+        cursor: pointer;
+        margin: 5px;
+      }
+      #yesBtn {
+        background: #28a745;
+        color: white;
+      }
+      #noBtn {
+        background: #cc0000;
+        color: white;
       }
     </style>
   </head>
   <body>
-    <audio id="bgm" src="audio/OneRepublic - Counting Stars.mp3" autoplay loop></audio> <!-- music-->
-    <img src="images/YANS_LOGO.svg" alt="The YANS logo, blue"> <!-- logo -->
-    <h2 style="color: white; font-family: 'Yu Gothic UI', sans-serif">Welcome to Your Average News Station, your all-in-one website for everything <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #2554C7">average</a>!</h2>
+    <audio id="bgm" src="audio/OneRepublic - Counting Stars.mp3" loop></audio>
+
+    <div id="musicPopup">
+      <h2>Music is featured on this site</h2>
+      <p>Would you like to listen to our selected music?</p>
+      <button id="yesBtn" class="popup-btn">Sure!</button>
+      <button id="noBtn" class="popup-btn">No, thanks.</button>
+    </div>
+
+    <img src="images/YANS_LOGO.svg" alt="The YANS logo, blue">
+
+    <h2>
+      Welcome to Your Average News Station, your all-in-one website for everything
+      <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #2554C7">
+        average
+      </a>!
+    </h2>
+
+    <script>
+      const popup = document.getElementById("musicPopup");
+      const bgm = document.getElementById("bgm");
+      document.getElementById("yesBtn").onclick = function () {
+        bgm.play();
+        popup.remove();
+      };
+      document.getElementById("noBtn").onclick = function () {
+        popup.remove();
+      };
+    </script>
   </body>
 </html>
