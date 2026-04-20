@@ -5,6 +5,9 @@
     <title>Your Average News Station (YANS)</title>
     <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
 
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
     <style>
       body {
         padding: 5px;
@@ -68,15 +71,20 @@
         background: #222;
         color: white;
         border: 1px solid #444;
-        padding: 8px 12px;
+        padding: 8px;
         cursor: pointer;
-        font-size: 18px;
+        font-size: 20px;
         border-radius: 0px;
         transition: background 0.2s;
       }
 
       .ctrl-btn:hover {
         background: #333;
+      }
+
+      .material-icons {
+        font-size: 22px;
+        vertical-align: middle;
       }
     </style>
   </head>
@@ -100,9 +108,12 @@
 
     <!-- Control Panel -->
     <div id="musicControls">
-      <button id="prevBtn" class="ctrl-btn">◁</button>
-      <button id="pauseBtn" class="ctrl-btn">❚❚</button>
-      <button id="nextBtn" class="ctrl-btn">▷</button>
+      <button id="volDownBtn" class="ctrl-btn"><span class="material-icons">volume_down</span></button>
+      <button id="volUpBtn" class="ctrl-btn"><span class="material-icons">volume_up</span></button>
+      <button id="prevBtn" class="ctrl-btn"><span class="material-icons">skip_previous</span></button>
+      <button id="restartBtn" class="ctrl-btn"><span class="material-icons">replay</span></button>
+      <button id="pauseBtn" class="ctrl-btn"><span class="material-icons">pause</span></button>
+      <button id="nextBtn" class="ctrl-btn"><span class="material-icons">skip_next</span></button>
     </div>
 
     <script>
@@ -137,42 +148,58 @@
       const firstIndex = getRandomSongIndex();
       loadSong(firstIndex);
 
-      document.getElementById("yesBtn").onclick = function () {
+      document.getElementById("yesBtn").onclick = () => {
         bgm.play();
         popup.remove();
       };
 
-      document.getElementById("noBtn").onclick = function () {
+      document.getElementById("noBtn").onclick = () => {
         bgm.pause();
         popup.remove();
       };
 
-      // Control panel buttons
+      // Control buttons
+      const volDownBtn = document.getElementById("volDownBtn");
+      const volUpBtn = document.getElementById("volUpBtn");
       const prevBtn = document.getElementById("prevBtn");
+      const restartBtn = document.getElementById("restartBtn");
       const pauseBtn = document.getElementById("pauseBtn");
       const nextBtn = document.getElementById("nextBtn");
 
-      prevBtn.onclick = function () {
+      volDownBtn.onclick = () => {
+        bgm.volume = Math.max(0, bgm.volume - 0.1);
+      };
+
+      volUpBtn.onclick = () => {
+        bgm.volume = Math.min(1, bgm.volume + 0.1);
+      };
+
+      prevBtn.onclick = () => {
         currentIndex = (currentIndex - 1 + songs.length) % songs.length;
         loadSong(currentIndex);
       };
 
-      nextBtn.onclick = function () {
+      restartBtn.onclick = () => {
+        bgm.currentTime = 0;
+        bgm.play();
+      };
+
+      pauseBtn.onclick = () => {
+        if (bgm.paused) {
+          bgm.play();
+          pauseBtn.innerHTML = '<span class="material-icons">pause</span>';
+        } else {
+          bgm.pause();
+          pauseBtn.innerHTML = '<span class="material-icons">play_arrow</span>';
+        }
+      };
+
+      nextBtn.onclick = () => {
         let newIndex = getRandomSongIndex();
         loadSong(newIndex);
       };
 
-      pauseBtn.onclick = function () {
-        if (bgm.paused) {
-          bgm.play();
-          pauseBtn.textContent = "❚❚";
-        } else {
-          bgm.pause();
-          pauseBtn.textContent = "▷";
-        }
-      };
-
-      bgm.onended = function () {
+      bgm.onended = () => {
         let newIndex = getRandomSongIndex();
         loadSong(newIndex);
       };
