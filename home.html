@@ -5,39 +5,18 @@
   <title>Your Average News Station (YANS)</title>
   <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
 
-  <!-- reCAPTCHA gate check -->
   <script>
     if (!document.cookie.includes("yansHuman=1")) {
       window.location.href = "index.html";
     }
   </script>
 
-  <!-- Firebase SDK (compat version — REQUIRED) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-  <!-- Your Firebase config -->
   <script src="firebase.js"></script>
 
-  <!-- Auth protection + logout -->
-  <script>
-    firebase.auth().onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "login.html";
-      } else {
-        document.getElementById("welcome").innerText =
-          "Welcome, " + user.email;
-      }
-    });
-
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "login.html";
-      });
-    }
-  </script>
-
-  <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <style>
@@ -47,8 +26,6 @@
       color: white;
       font-family: 'Yu Gothic UI', sans-serif;
     }
-
-    /* Popup */
     #musicPopup {
       position: fixed;
       top: 50%;
@@ -63,18 +40,14 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.3);
       z-index: 9999;
     }
-
     .popup-btn {
       padding: 10px 20px;
       border: 1px solid #CCC;
       cursor: pointer;
       margin: 5px;
     }
-
     #yesBtn { background: #28a745; color: white; }
     #noBtn { background: #cc0000; color: white; }
-
-    /* Control Panel */
     #musicControls {
       position: fixed;
       bottom: 15px;
@@ -86,7 +59,6 @@
       gap: 10px;
       z-index: 9999;
     }
-
     .ctrl-btn {
       background: #222;
       color: white;
@@ -95,14 +67,11 @@
       cursor: pointer;
       font-size: 20px;
     }
-
     .ctrl-btn:hover { background: #333; }
-
     .material-icons {
       font-size: 22px;
       vertical-align: middle;
     }
-
     #logoutBtn {
       position: fixed;
       top: 10px;
@@ -113,17 +82,27 @@
       padding: 10px 15px;
       cursor: pointer;
     }
+    #adminPanel input, #adminPanel textarea {
+      background: #222;
+      color: white;
+      border: 1px solid #444;
+      padding: 5px;
+    }
+    #adminPanel button {
+      background: #1974D2;
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
-  <!-- Logout -->
   <button id="logoutBtn" onclick="logout()">Logout</button>
 
-  <!-- Firebase welcome -->
   <h2 id="welcome">Loading...</h2>
 
-  <!-- Music -->
   <audio id="bgm" loop></audio>
 
   <div id="musicPopup">
@@ -140,7 +119,18 @@
     <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #1974D2">average</a>!
   </h2>
 
-  <!-- Control Panel -->
+  <div id="adminPanel" style="display:none; margin-top:20px;">
+    <h3>Create Admin Post</h3>
+    <input id="postTitle" placeholder="Title" style="width:100%; margin-bottom:5px;">
+    <textarea id="postBody" placeholder="Body" style="width:100%; height:80px;"></textarea>
+    <button id="createPostBtn">Publish</button>
+  </div>
+
+  <div id="adminFeed" style="margin-top:20px;">
+    <h3>Latest Admin Posts</h3>
+    <div id="postsContainer"></div>
+  </div>
+
   <div id="musicControls">
     <button id="volDownBtn" class="ctrl-btn"><span class="material-icons">volume_down</span></button>
     <button id="volUpBtn" class="ctrl-btn"><span class="material-icons">volume_up</span></button>
@@ -151,6 +141,59 @@
   </div>
 
   <script>
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        document.getElementById("welcome").innerText = "Welcome, " + user.email;
+        if (user.email === "noahweiss@odysseyk12.org") {
+          document.getElementById("adminPanel").style.display = "block";
+        }
+        startPostsListener();
+      }
+    });
+
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
+
+    const db = firebase.firestore();
+
+    function createPost() {
+      const title = document.getElementById("postTitle").value.trim();
+      const body = document.getElementById("postBody").value.trim();
+      if (!title || !body) return;
+      db.collection("adminPosts").add({
+        title,
+        body,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        document.getElementById("postTitle").value = "";
+        document.getElementById("postBody").value = "";
+      });
+    }
+
+    document.getElementById("createPostBtn").onclick = createPost;
+
+    function startPostsListener() {
+      const postsContainer = document.getElementById("postsContainer");
+      db.collection("adminPosts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+        postsContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const div = document.createElement("div");
+          div.style.border = "1px solid #333";
+          div.style.padding = "8px";
+          div.style.marginBottom = "8px";
+          const date = data.createdAt ? data.createdAt.toDate().toLocaleString() : "";
+          div.innerHTML = "<h4>" + data.title + "</h4><p>" + data.body + "</p><small>" + date + "</small>";
+          postsContainer.appendChild(div);
+        });
+      });
+    }
+
     const songs = [
       "audio/OneRepublic - Counting Stars.mp3",
       "audio/Tame Impala - The Less I Know The Better.mp3",
@@ -172,7 +215,6 @@
     const popup = document.getElementById("musicPopup");
     const controls = document.getElementById("musicControls");
 
-    // Preload first song WITHOUT playing
     let firstIndex = getRandomSongIndex();
     bgm.src = songs[firstIndex];
 
