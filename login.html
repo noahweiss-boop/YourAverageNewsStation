@@ -1,34 +1,80 @@
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="firebase.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Login - YANS</title>
 
-<h2>Login</h2>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="firebase.js"></script>
 
-<form onsubmit="login(); return false;">
-  <input id="email" type="email" placeholder="Email"><br>
-  <input id="password" type="password" placeholder="Password"><br><br>
-  <button type="submit">Login</button>
-</form>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: 'Yu Gothic UI', sans-serif;
+      padding: 20px;
+    }
 
-<hr>
+    input {
+      padding: 10px;
+      width: 250px;
+      margin: 5px 0;
+      background: #222;
+      border: 1px solid #444;
+      color: white;
+    }
 
-<button onclick="loginWithGoogle()">Sign in with Google</button>
+    button {
+      padding: 10px 20px;
+      background: #1974D2;
+      border: none;
+      color: white;
+      cursor: pointer;
+      margin-top: 10px;
+    }
 
-<script>
-  function login() {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
+    button:hover {
+      background: #0f5bb5;
+    }
 
-    firebase.auth().signInWithEmailAndPassword(email, pass)
-      .then(() => window.location.href = "home.html")
-      .catch(err => alert(err.message));
-  }
+    hr {
+      margin: 20px 0;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
 
-  function loginWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider)
-      .then(() => window.location.href = "home.html")
-      .catch(err => alert(err.message));
-  }
-</script>
+<body>
+  <h2>Login</h2>
+
+  <form onsubmit="login(); return false;">
+    <input id="email" type="email" placeholder="Email"><br>
+    <input id="password" type="password" placeholder="Password"><br><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <hr>
+
+  <button onclick="loginWithGoogle()">Sign in with Google</button>
+
+  <script>
+    function login() {
+      const email = document.getElementById("email").value;
+      const pass = document.getElementById("password").value;
+
+      firebase.auth().signInWithEmailAndPassword(email, pass)
+        .then(() => window.location.href = "home.html")
+        .catch(err => alert(err.message));
+    }
+
+    function loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(() => window.location.href = "home.html")
+        .catch(err => alert(err.message));
+    }
+  </script>
+</body>
+</html>
