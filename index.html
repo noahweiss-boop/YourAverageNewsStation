@@ -61,7 +61,7 @@
         border: 1px solid #333;
         padding: 10px;
         border-radius: 0px;
-        display: flex;
+        display: none; /* HIDDEN UNTIL CONFIRMED */
         gap: 10px;
         z-index: 9999;
         box-shadow: 0 0 10px rgba(0,0,0,0.4);
@@ -143,6 +143,7 @@
 
       const popup = document.getElementById("musicPopup");
       const bgm = document.getElementById("bgm");
+      const controls = document.getElementById("musicControls");
 
       // Initial random song
       const firstIndex = getRandomSongIndex();
@@ -151,11 +152,13 @@
       document.getElementById("yesBtn").onclick = () => {
         bgm.play();
         popup.remove();
+        controls.style.display = "flex"; // SHOW CONTROL PANEL
       };
 
       document.getElementById("noBtn").onclick = () => {
         bgm.pause();
         popup.remove();
+        controls.remove(); // NEVER SHOW CONTROL PANEL
       };
 
       // Control buttons
