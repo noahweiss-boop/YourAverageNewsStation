@@ -5,6 +5,13 @@
     <title>Your Average News Station (YANS)</title>
     <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
 
+    <!-- Google reCAPTCHA gate check -->
+    <script>
+      if (!document.cookie.includes("yansHuman=1")) {
+        window.location.href = "index.html";
+      }
+    </script>
+
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -26,10 +33,8 @@
         color: black;
         padding: 20px;
         border: 1px solid #CCC;
-        border-radius: 0px;
         width: 300px;
         text-align: center;
-        font-family: 'Yu Gothic UI', sans-serif;
         box-shadow: 0 0 20px rgba(0,0,0,0.3);
         z-index: 9999;
       }
@@ -37,20 +42,12 @@
       .popup-btn {
         padding: 10px 20px;
         border: 1px solid #CCC;
-        border-radius: 0px;
         cursor: pointer;
         margin: 5px;
       }
 
-      #yesBtn {
-        background: #28a745;
-        color: white;
-      }
-
-      #noBtn {
-        background: #cc0000;
-        color: white;
-      }
+      #yesBtn { background: #28a745; color: white; }
+      #noBtn { background: #cc0000; color: white; }
 
       /* Control Panel */
       #musicControls {
@@ -60,11 +57,9 @@
         background: #1a1a1a;
         border: 1px solid #333;
         padding: 10px;
-        border-radius: 0px;
-        display: none; /* HIDDEN UNTIL CONFIRMED */
+        display: none; /* hidden until Sure! */
         gap: 10px;
         z-index: 9999;
-        box-shadow: 0 0 10px rgba(0,0,0,0.4);
       }
 
       .ctrl-btn {
@@ -74,13 +69,9 @@
         padding: 8px;
         cursor: pointer;
         font-size: 20px;
-        border-radius: 0px;
-        transition: background 0.2s;
       }
 
-      .ctrl-btn:hover {
-        background: #333;
-      }
+      .ctrl-btn:hover { background: #333; }
 
       .material-icons {
         font-size: 22px;
@@ -90,13 +81,6 @@
   </head>
 
   <body>
-    <script>
-      if (!document.cookie.includes("yansHuman=1")) {
-        window.location.href = "index.html";
-      }
-    </script>
-
-    
     <audio id="bgm" loop></audio>
 
     <div id="musicPopup">
@@ -141,6 +125,14 @@
         return newIndex;
       }
 
+      const bgm = document.getElementById("bgm");
+      const popup = document.getElementById("musicPopup");
+      const controls = document.getElementById("musicControls");
+
+      // Preload first song WITHOUT playing
+      let firstIndex = getRandomSongIndex();
+      bgm.src = songs[firstIndex];
+
       function loadSong(index) {
         currentIndex = index;
         lastIndex = index;
@@ -148,53 +140,37 @@
         bgm.play();
       }
 
-      const popup = document.getElementById("musicPopup");
-      const bgm = document.getElementById("bgm");
-      const controls = document.getElementById("musicControls");
-
-      // Initial random song
-      const firstIndex = getRandomSongIndex();
-      loadSong(firstIndex);
-
       document.getElementById("yesBtn").onclick = () => {
-        bgm.play();
+        loadSong(firstIndex); // NOW music starts
         popup.remove();
-        controls.style.display = "flex"; // SHOW CONTROL PANEL
+        controls.style.display = "flex";
       };
 
       document.getElementById("noBtn").onclick = () => {
-        bgm.pause();
         popup.remove();
-        controls.remove(); // NEVER SHOW CONTROL PANEL
+        controls.remove();
       };
 
-      // Control buttons
-      const volDownBtn = document.getElementById("volDownBtn");
-      const volUpBtn = document.getElementById("volUpBtn");
-      const prevBtn = document.getElementById("prevBtn");
-      const restartBtn = document.getElementById("restartBtn");
-      const pauseBtn = document.getElementById("pauseBtn");
-      const nextBtn = document.getElementById("nextBtn");
-
-      volDownBtn.onclick = () => {
+      // Buttons
+      document.getElementById("volDownBtn").onclick = () => {
         bgm.volume = Math.max(0, bgm.volume - 0.1);
       };
 
-      volUpBtn.onclick = () => {
+      document.getElementById("volUpBtn").onclick = () => {
         bgm.volume = Math.min(1, bgm.volume + 0.1);
       };
 
-      prevBtn.onclick = () => {
+      document.getElementById("prevBtn").onclick = () => {
         currentIndex = (currentIndex - 1 + songs.length) % songs.length;
         loadSong(currentIndex);
       };
 
-      restartBtn.onclick = () => {
+      document.getElementById("restartBtn").onclick = () => {
         bgm.currentTime = 0;
         bgm.play();
       };
 
-      pauseBtn.onclick = () => {
+      document.getElementById("pauseBtn").onclick = () => {
         if (bgm.paused) {
           bgm.play();
           pauseBtn.innerHTML = '<span class="material-icons">pause</span>';
@@ -204,7 +180,7 @@
         }
       };
 
-      nextBtn.onclick = () => {
+      document.getElementById("nextBtn").onclick = () => {
         let newIndex = getRandomSongIndex();
         loadSong(newIndex);
       };
