@@ -1,5 +1,4 @@
-<script>
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyAQFzHILDhefvRnrIPSF2OzhIFPOe42VVY",
     authDomain: "yans-auth.firebaseapp.com",
     projectId: "yans-auth",
@@ -8,5 +7,4 @@
     appId: "1:538236782184:web:6a28ee8a9ce40425d25ddd"
   };
 
-  firebase.initializeApp(firebaseConfig);
-</script>
+firebase.initializeApp(firebaseConfig);
