@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Your Average News Station (YANS)</title>
     <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
+
     <style>
       body {
         padding: 5px;
@@ -11,6 +12,8 @@
         color: white;
         font-family: 'Yu Gothic UI', sans-serif;
       }
+
+      /* Popup */
       #musicPopup {
         position: fixed;
         top: 50%;
@@ -27,6 +30,7 @@
         box-shadow: 0 0 20px rgba(0,0,0,0.3);
         z-index: 9999;
       }
+
       .popup-btn {
         padding: 10px 20px;
         border: 1px solid #CCC;
@@ -34,16 +38,49 @@
         cursor: pointer;
         margin: 5px;
       }
+
       #yesBtn {
         background: #28a745;
         color: white;
       }
+
       #noBtn {
         background: #cc0000;
         color: white;
       }
+
+      /* Control Panel */
+      #musicControls {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        padding: 10px;
+        border-radius: 0px;
+        display: flex;
+        gap: 10px;
+        z-index: 9999;
+        box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      }
+
+      .ctrl-btn {
+        background: #222;
+        color: white;
+        border: 1px solid #444;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 18px;
+        border-radius: 0px;
+        transition: background 0.2s;
+      }
+
+      .ctrl-btn:hover {
+        background: #333;
+      }
     </style>
   </head>
+
   <body>
     <audio id="bgm" loop></audio>
 
@@ -56,7 +93,17 @@
 
     <img src="images/YANS_LOGO.svg" alt="The YANS logo, blue">
 
-    <h2>Welcome to Your Average News Station, your all-in-one website for everything<a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #1974D2">average</a>!</h2>
+    <h2>
+      Welcome to Your Average News Station, your all-in-one website for everything
+      <a href="https://polytoria.com/u/average" style="font-family: 'Segoe Script'; color: #1974D2">average</a>!
+    </h2>
+
+    <!-- Control Panel -->
+    <div id="musicControls">
+      <button id="prevBtn" class="ctrl-btn">◁</button>
+      <button id="pauseBtn" class="ctrl-btn">❚❚</button>
+      <button id="nextBtn" class="ctrl-btn">▷</button>
+    </div>
 
     <script>
       const songs = [
@@ -65,14 +112,30 @@
         "audio/Michael Jackson - Thriller.mp3"
       ];
 
-      function getRandomSong() {
-        const mp3s = songs.filter(s => s.toLowerCase().endsWith(".mp3"));
-        return mp3s[Math.floor(Math.random() * mp3s.length)];
+      let lastIndex = -1;
+      let currentIndex = -1;
+
+      function getRandomSongIndex() {
+        let newIndex;
+        do {
+          newIndex = Math.floor(Math.random() * songs.length);
+        } while (newIndex === lastIndex);
+        return newIndex;
+      }
+
+      function loadSong(index) {
+        currentIndex = index;
+        lastIndex = index;
+        bgm.src = songs[index];
+        bgm.play();
       }
 
       const popup = document.getElementById("musicPopup");
       const bgm = document.getElementById("bgm");
-      bgm.src = getRandomSong();
+
+      // Initial random song
+      const firstIndex = getRandomSongIndex();
+      loadSong(firstIndex);
 
       document.getElementById("yesBtn").onclick = function () {
         bgm.play();
@@ -80,7 +143,38 @@
       };
 
       document.getElementById("noBtn").onclick = function () {
+        bgm.pause();
         popup.remove();
+      };
+
+      // Control panel buttons
+      const prevBtn = document.getElementById("prevBtn");
+      const pauseBtn = document.getElementById("pauseBtn");
+      const nextBtn = document.getElementById("nextBtn");
+
+      prevBtn.onclick = function () {
+        currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+        loadSong(currentIndex);
+      };
+
+      nextBtn.onclick = function () {
+        let newIndex = getRandomSongIndex();
+        loadSong(newIndex);
+      };
+
+      pauseBtn.onclick = function () {
+        if (bgm.paused) {
+          bgm.play();
+          pauseBtn.textContent = "❚❚";
+        } else {
+          bgm.pause();
+          pauseBtn.textContent = "▷";
+        }
+      };
+
+      bgm.onended = function () {
+        let newIndex = getRandomSongIndex();
+        loadSong(newIndex);
       };
     </script>
   </body>
