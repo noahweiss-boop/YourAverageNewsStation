@@ -13,14 +13,32 @@
   </script>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <!-- Firebase SDK (compat version — REQUIRED) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-  <!-- Your Firebase config -->
-  <script src="firebase.js"></script>
+<!-- Your Firebase config -->
+<script src="firebase.js"></script>
 
-  <!-- Auth protection + logout -->
-  <script src="home.js"></script>
+<script>
+  // Protect the page
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("welcome").innerText =
+        "Welcome, " + user.email;
+    }
+  });
+
+  // Logout
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    });
+  }
+</script>
+
 
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
