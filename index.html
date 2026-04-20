@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Verification Required</title>
+
+    <!-- Google reCAPTCHA v2 Checkbox -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+      body {
+        background: #111;
+        color: white;
+        font-family: 'Yu Gothic UI', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      #box {
+        background: #1a1a1a;
+        padding: 30px;
+        border: 1px solid #333;
+        text-align: center;
+      }
+      button {
+        padding: 10px 20px;
+        background: #1974D2;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="box">
+      <h2>Please verify you're human</h2>
+
+      <form id="verifyForm">
+        <div class="g-recaptcha" data-sitekey="YOUR_SITE_KEY" data-callback="verified"></div>
+        <br>
+        <button type="submit">Continue</button>
+      </form>
+    </div>
+
+    <script>
+      function verified() {
+        // Set a cookie so the user doesn't get challenged again
+        document.cookie = "yansHuman=1; path=/; max-age=86400";
+
+        // Redirect to your real site
+        window.location.href = "home.html";
+      }
+
+      // Prevent clicking Continue without solving CAPTCHA
+      document.getElementById("verifyForm").addEventListener("submit", function(e) {
+        if (grecaptcha.getResponse().length === 0) {
+          e.preventDefault();
+          alert("Please complete the CAPTCHA first.");
+        }
+      });
+    </script>
+  </body>
+</html>
