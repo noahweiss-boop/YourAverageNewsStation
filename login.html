@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Login</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js"></script>
+  <!-- Correct Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
-  <!-- Your Firebase config -->
+  <!-- Your config -->
   <script src="firebase.js"></script>
 
   <style>
@@ -33,8 +33,10 @@
 
 <body>
   <h2>Login</h2>
+
   <input id="email" type="email" placeholder="Email"><br>
   <input id="password" type="password" placeholder="Password"><br><br>
+
   <button onclick="login()">Login</button>
 </body>
 </html>
