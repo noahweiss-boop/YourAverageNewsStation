@@ -43,6 +43,40 @@
       margin: 20px 0;
       border: 1px solid #333;
     }
+
+    .continue-box {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #333;
+    }
+
+    .continue-label {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .provider-btn {
+      width: 260px;
+      background: #222;
+      border: 1px solid #444;
+      color: white;
+      padding: 10px;
+      margin: 5px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .provider-btn img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .provider-btn:hover {
+      background: #2d2d2d;
+    }
   </style>
 </head>
 
@@ -58,22 +92,18 @@
   <hr>
 
   <div class="continue-box">
-  <p class="continue-label">Continue with</p>
+    <p class="continue-label">Continue with</p>
 
-  <button class="provider-btn" onclick="loginWithGoogle()">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
-    Google
-  </button>
+    <button class="provider-btn" onclick="loginWithGoogle()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+      Google
+    </button>
 
-  <button class="provider-btn" onclick="loginWithGitHub()">
-    <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
-    GitHub
-  </button>
-</div>
-
-
-  <button onclick="loginWithGoogle()">Sign in with Google</button><br>
-  <button onclick="loginWithGitHub()">Sign in with GitHub</button>
+    <button class="provider-btn" onclick="loginWithGitHub()">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">
+      GitHub
+    </button>
+  </div>
 
   <script>
     function login() {
