@@ -90,6 +90,13 @@
   </head>
 
   <body>
+    <script>
+      if (!document.cookie.includes("yansHuman=1")) {
+        window.location.href = "index.html";
+      }
+    </script>
+
+    
     <audio id="bgm" loop></audio>
 
     <div id="musicPopup">
