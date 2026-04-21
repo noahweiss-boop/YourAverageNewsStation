@@ -2,179 +2,260 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Home - YANS</title>
+  <title>YANS — Cosmic Nebula Edition</title>
   <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
-
-  <link rel="stylesheet" href="global.css">
-  <script src="global.js" defer></script>
-
-  <script>
-    if (!document.cookie.includes("yansHuman=1")) {
-      window.location.href = "index.html";
-    }
-  </script>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
   <script src="firebase.js"></script>
 
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <style>
+    /* ---------------------------------------------------
+       GLOBAL COSMIC THEME
+    --------------------------------------------------- */
     body {
-      padding: 5px;
-      background: #0d0d0d;
-      color: white;
+      margin: 0;
+      overflow-x: hidden;
       font-family: 'Yu Gothic UI', sans-serif;
+      color: white;
+      background: black;
     }
 
-    /* ------------------ GLASSY PANELS ------------------ */
+    /* ---------------------------------------------------
+       STARFIELD CANVAS
+    --------------------------------------------------- */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -5;
+    }
+
+    /* ---------------------------------------------------
+       NEBULA LAYERS
+    --------------------------------------------------- */
+    .nebula {
+      position: fixed;
+      top: 0; left: 0;
+      width: 200%;
+      height: 200%;
+      background-size: cover;
+      opacity: 0.35;
+      animation: drift 60s linear infinite;
+      z-index: -4;
+      filter: blur(20px);
+    }
+
+    #nebula1 {
+      background-image: url('images/nebula_blue_1.png');
+      animation-duration: 90s;
+    }
+
+    #nebula2 {
+      background-image: url('images/nebula_blue_2.png');
+      animation-duration: 120s;
+      opacity: 0.25;
+    }
+
+    @keyframes drift {
+      from { transform: translate(-10%, -10%) scale(1.1); }
+      to   { transform: translate(-30%, -30%) scale(1.1); }
+    }
+
+    /* ---------------------------------------------------
+       WIND PARTICLES
+    --------------------------------------------------- */
+    .wind {
+      position: fixed;
+      top: -10vh;
+      width: 2px;
+      height: 40vh;
+      background: rgba(150,200,255,0.4);
+      filter: blur(2px);
+      animation: windFall 2s linear forwards;
+      z-index: -3;
+    }
+
+    @keyframes windFall {
+      to { transform: translateY(120vh); opacity: 0; }
+    }
+
+    /* ---------------------------------------------------
+       GLASS PANELS
+    --------------------------------------------------- */
     .glass {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 10px;
-      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+      background: rgba(0, 20, 40, 0.45);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(120,160,255,0.25);
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,100,255,0.35);
     }
 
-    /* ------------------ MUSIC POPUP ------------------ */
-    #musicPopup {
+    /* ---------------------------------------------------
+       TOP UI
+    --------------------------------------------------- */
+    #visitCounter {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 320px;
-      padding: 25px;
-      text-align: center;
-      z-index: 9999;
-      color: white;
-    }
-
-    .popup-btn {
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px;
-      border: none;
+      top: 15px;
+      right: 150px;
+      padding: 10px 18px;
       font-weight: bold;
-      transition: 0.2s;
+      border-radius: 8px;
     }
 
-    #yesBtn { background: #28a745; color: white; }
-    #noBtn { background: #cc0000; color: white; }
-
-    .popup-btn:hover {
-      opacity: 0.85;
-      transform: scale(1.03);
-    }
-
-    /* ------------------ MUSIC CONTROLS ------------------ */
-    #musicControls {
-      position: fixed;
-      bottom: 15px;
-      right: 15px;
-      padding: 10px;
-      display: none;
-      gap: 10px;
-      z-index: 9999;
-    }
-
-    .ctrl-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: white;
-      padding: 8px;
-      cursor: pointer;
-      font-size: 20px;
-      border-radius: 6px;
-      transition: 0.2s;
-    }
-
-    .ctrl-btn:hover {
-      background: rgba(255,255,255,0.2);
-      transform: scale(1.05);
-    }
-
-    /* ------------------ TOP BAR ------------------ */
     #logoutBtn {
       position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #cc0000;
+      top: 15px;
+      right: 15px;
+      padding: 10px 18px;
       border: none;
-      color: white;
-      padding: 10px 15px;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 8px;
+      background: #d62828;
+      color: white;
       font-weight: bold;
       transition: 0.2s;
     }
 
     #logoutBtn:hover {
-      background: #e60000;
       transform: scale(1.05);
+      background: #ff3b3b;
     }
 
-    #visitCounter {
+    /* ---------------------------------------------------
+       LOGO + WELCOME
+    --------------------------------------------------- */
+    #logo {
+      width: 300px;
+      margin-top: 40px;
+      filter: drop-shadow(0 0 25px #3fa9ff);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+      100% { transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      margin-top: 10px;
+      text-shadow: 0 0 15px #3fa9ff;
+    }
+
+    /* ---------------------------------------------------
+       MUSIC POPUP
+    --------------------------------------------------- */
+    #musicPopup {
       position: fixed;
-      top: 10px;
-      right: 130px;
-      background: #1974D2;
-      padding: 10px 15px;
-      border-radius: 6px;
-      font-weight: bold;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 350px;
+      padding: 25px;
+      text-align: center;
+      z-index: 9999;
+      animation: fadeIn 0.6s ease-out;
     }
 
-    /* ------------------ ADMIN PANEL ------------------ */
-    #adminPanel {
-      margin-top: 20px;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -45%); }
+      to   { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    .popup-btn {
+      padding: 12px 20px;
+      margin: 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    #yesBtn { background: #28a745; }
+    #noBtn  { background: #cc0000; }
+
+    .popup-btn:hover {
+      transform: scale(1.05);
+      opacity: 0.85;
+    }
+
+    /* ---------------------------------------------------
+       MUSIC CONTROLS
+    --------------------------------------------------- */
+    #musicControls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px;
+      display: none;
+      gap: 10px;
+    }
+
+    .ctrl-btn {
+      background: rgba(0, 40, 80, 0.6);
+      border: 1px solid rgba(120,160,255,0.3);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: white;
+    }
+
+    .ctrl-btn:hover {
+      transform: scale(1.1);
+      background: rgba(0, 60, 120, 0.7);
+    }
+
+    /* ---------------------------------------------------
+       ADMIN PANEL + POSTS
+    --------------------------------------------------- */
+    #adminPanel, #postsContainer div {
       padding: 15px;
+      margin: 20px auto;
+      width: 70%;
     }
 
     #adminPanel input,
     #adminPanel textarea {
       width: 100%;
-      background: rgba(255,255,255,0.1);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 8px;
-      border-radius: 6px;
+      padding: 10px;
       margin-bottom: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(120,160,255,0.3);
+      background: rgba(0, 20, 40, 0.4);
+      color: white;
     }
 
     #adminPanel button {
-      background: #1974D2;
-      border: none;
-      color: white;
       padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      background: #1974D2;
+      color: white;
       cursor: pointer;
-      border-radius: 6px;
       font-weight: bold;
       transition: 0.2s;
     }
 
     #adminPanel button:hover {
+      transform: scale(1.05);
       background: #1f86ff;
-      transform: scale(1.03);
     }
 
-    /* ------------------ POSTS ------------------ */
     #postsContainer div {
-      padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+      margin-bottom: 15px;
     }
 
     #postsContainer h4 {
       margin: 0;
       color: #4da3ff;
-    }
-
-    #postsContainer p {
-      margin: 5px 0;
+      text-shadow: 0 0 10px #4da3ff;
     }
 
     #postsContainer small {
@@ -184,8 +265,18 @@
 </head>
 
 <body>
+
+  <!-- STARFIELD + NEBULA -->
+  <canvas id="starfield"></canvas>
+  <div id="nebula1" class="nebula"></div>
+  <div id="nebula2" class="nebula"></div>
+
   <div id="visitCounter" class="glass">Visits: ...</div>
-  <button id="logoutBtn">Logout</button>
+  <button id="logoutBtn" onclick="logout()">Logout</button>
+
+  <center>
+    <img id="logo" src="images/YANS_LOGO.svg">
+  </center>
 
   <h2 id="welcome">Loading...</h2>
 
@@ -198,24 +289,15 @@
     <button id="noBtn" class="popup-btn">No, thanks.</button>
   </div>
 
-  <center>
-    <img src="images/YANS_LOGO.svg" alt="YANS logo" style="margin-top:20px; width:260px;">
-  </center>
-
-  <h2 style="text-align:center; margin-top:10px;">
-    Welcome to Your Average News Station, your all‑in‑one website for everything
-    <a href="https://polytoria.com/u/average" style="font-family:'Segoe Script'; color:#1974D2;">average</a>!
-  </h2>
-
   <div id="adminPanel" class="glass" style="display:none;">
     <h3>Create New Post</h3>
     <input id="postTitle" placeholder="Title">
-    <textarea id="postBody" placeholder="Body"></textarea>
+    <textarea id="postBody" placeholder="Body" style="height:80px;"></textarea>
     <button id="createPostBtn">Publish</button>
   </div>
 
-  <div id="adminFeed" style="margin-top:20px;">
-    <h3>Latest News Posts</h3>
+  <div id="adminFeed">
+    <h3 style="text-align:center; text-shadow:0 0 15px #3fa9ff;">Latest News Posts</h3>
     <div id="postsContainer"></div>
   </div>
 
@@ -229,6 +311,62 @@
   </div>
 
   <script>
+    /* ---------------------------------------------------
+       STARFIELD RENDERER
+    --------------------------------------------------- */
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.onresize = resize;
+
+    const stars = [];
+    for (let i = 0; i < 400; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2,
+        speed: Math.random() * 0.2 + 0.05
+      });
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+
+      for (let s of stars) {
+        ctx.globalAlpha = Math.random() * 0.8 + 0.2;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+        s.y += s.speed;
+        if (s.y > canvas.height) s.y = 0;
+      }
+
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    /* ---------------------------------------------------
+       WIND PARTICLES
+    --------------------------------------------------- */
+    function spawnWind() {
+      const w = document.createElement("div");
+      w.className = "wind";
+      w.style.left = Math.random() * 100 + "vw";
+      document.body.appendChild(w);
+      setTimeout(() => w.remove(), 2500);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.4) spawnWind();
+    }, 800);
+
+    /* ---------------------------------------------------
+       FIREBASE AUTH + POSTS
+    --------------------------------------------------- */
     firebase.auth().onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
@@ -251,8 +389,6 @@
     }
 
     const db = firebase.firestore();
-
-    /* VISIT COUNTER */
     const visitsRef = db.collection("siteStats").doc("visits");
 
     function incrementVisitCounter() {
@@ -268,7 +404,6 @@
       });
     }
 
-    /* POSTS */
     function createPost() {
       const title = document.getElementById("postTitle").value.trim();
       const body = document.getElementById("postBody").value.trim();
@@ -305,7 +440,9 @@
       });
     }
 
-    /* MUSIC */
+    /* ---------------------------------------------------
+       MUSIC SYSTEM
+    --------------------------------------------------- */
     const songs = [
       "audio/OneRepublic - Counting Stars.mp3",
       "audio/Tame Impala - The Less I Know The Better.mp3",
@@ -383,8 +520,3 @@
 
     bgm.onended = () => {
       let newIndex = getRandomSongIndex();
-      loadSong(newIndex);
-    };
-  </script>
-</body>
-</html>
