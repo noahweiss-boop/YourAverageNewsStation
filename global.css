@@ -1,0 +1,66 @@
+/* -------------------------
+   BLOCKING POPUP
+-------------------------- */
+#betaPopup {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#popupBox {
+  background: #222;
+  color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+#popupBox input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 15px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+/* -------------------------
+   CAUTION BANNER
+-------------------------- */
+#cautionBanner {
+  width: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    #ffeb3b,
+    #ffeb3b 20px,
+    #000 20px,
+    #000 40px
+  );
+  overflow: hidden;
+  height: 40px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.scrollText {
+  white-space: nowrap;
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  animation: scrollRight 8s linear infinite;
+}
+
+@keyframes scrollRight {
+  from { left: -100%; }
+  to { left: 100%; }
+}
