@@ -48,6 +48,7 @@
     }
     #yesBtn { background: #28a745; color: white; }
     #noBtn { background: #cc0000; color: white; }
+
     #musicControls {
       position: fixed;
       bottom: 15px;
@@ -72,6 +73,7 @@
       font-size: 22px;
       vertical-align: middle;
     }
+
     #logoutBtn {
       position: fixed;
       top: 10px;
@@ -82,6 +84,17 @@
       padding: 10px 15px;
       cursor: pointer;
     }
+
+    #visitCounter {
+      position: fixed;
+      top: 10px;
+      right: 120px;
+      background: #1974D2;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
     #adminPanel input, #adminPanel textarea {
       background: #222;
       color: white;
@@ -99,6 +112,7 @@
 </head>
 
 <body>
+  <div id="visitCounter">Visits: ...</div>
   <button id="logoutBtn" onclick="logout()">Logout</button>
 
   <h2 id="welcome">Loading...</h2>
@@ -146,9 +160,12 @@
         window.location.href = "login.html";
       } else {
         document.getElementById("welcome").innerText = "Welcome, " + user.email;
+
         if (user.email === "noahweiss@odysseyk12.org") {
           document.getElementById("adminPanel").style.display = "block";
         }
+
+        incrementVisitCounter();
         startPostsListener();
       }
     });
@@ -161,10 +178,28 @@
 
     const db = firebase.firestore();
 
+    /* VISIT COUNTER */
+    const visitsRef = db.collection("siteStats").doc("visits");
+
+    function incrementVisitCounter() {
+      visitsRef.get().then(doc => {
+        if (!doc.exists) {
+          visitsRef.set({ count: 1 });
+          document.getElementById("visitCounter").innerText = "Visits: 1";
+        } else {
+          const newCount = (doc.data().count || 0) + 1;
+          visitsRef.update({ count: newCount });
+          document.getElementById("visitCounter").innerText = "Visits: " + newCount;
+        }
+      });
+    }
+
+    /* POSTS */
     function createPost() {
       const title = document.getElementById("postTitle").value.trim();
       const body = document.getElementById("postBody").value.trim();
       if (!title || !body) return;
+
       db.collection("adminPosts").add({
         title,
         body,
@@ -194,6 +229,7 @@
       });
     }
 
+    /* MUSIC */
     const songs = [
       "audio/OneRepublic - Counting Stars.mp3",
       "audio/Tame Impala - The Less I Know The Better.mp3",
