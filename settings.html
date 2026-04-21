@@ -1,18 +1,114 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
-    
-    <title>Options - YANS</title>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
 
-    <style>
-      body {
-        font-family: 'Yu Gothic UI', sans-serif;
+  <!-- BLOCKING POPUP -->
+  <div id="betaPopup">
+    <div id="popupBox">
+      <h2>Settings are in beta</h2>
+      <p>To load, please type "0000" in the textbox below and hit Enter.</p>
+      <input type="text" id="betaInput" placeholder="Enter code...">
+    </div>
+  </div>
+
+  <!-- MOVING CAUTION BANNER -->
+  <div id="cautionBanner">
+    <div class="scrollText">⚠ SETTINGS IN BETA ⚠ SETTINGS IN BETA ⚠ SETTINGS IN BETA ⚠</div>
+  </div>
+
+  <!-- PAGE CONTENT (LOCKED UNTIL CODE ENTERED) -->
+  <div id="pageContent" style="display:none;">
+
+    <div class="settings-container">
+      <h1>Settings</h1>
+
+      <div class="setting">
+        <label>
+          <span>Dark Mode</span>
+          <input type="checkbox" id="darkMode">
+        </label>
+      </div>
+
+      <div class="setting">
+        <label>
+          <span>Text Size</span>
+          <input type="range" id="textSize" min="12" max="32">
+        </label>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* -------------------------
+       POPUP BLOCKER
+    -------------------------- */
+    const popup = document.getElementById("betaPopup");
+    const input = document.getElementById("betaInput");
+    const content = document.getElementById("pageContent");
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        if (input.value === "0000") {
+          popup.style.display = "none";
+          content.style.display = "block";
+        } else {
+          input.value = "";
+          input.placeholder = "Incorrect — try again";
+        }
       }
-    </style>
-  </head>
-  <body>
-    <h1>🧱 STILL IN CONSTRUCTION 🧱</h1>
-  </body>
+    });
+
+    /* -------------------------
+       SETTINGS (NO COOKIES)
+    -------------------------- */
+
+    function setCookie(name, value, days = 365) {
+      const expires = new Date(Date.now() + days*24*60*60*1000).toUTCString();
+      document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+    }
+
+    function getCookie(name) {
+      const cookies = document.cookie.split("; ");
+      for (const c of cookies) {
+        const [key, val] = c.split("=");
+        if (key === name) return val;
+      }
+      return null;
+    }
+
+    const darkMode = document.getElementById("darkMode");
+    const textSize = document.getElementById("textSize");
+
+    const savedDark = getCookie("darkMode");
+    const savedSize = getCookie("textSize");
+
+    if (savedDark !== null) {
+      darkMode.checked = savedDark === "true";
+      document.body.classList.toggle("dark", darkMode.checked);
+    }
+
+    if (savedSize !== null) {
+      textSize.value = savedSize;
+      document.body.style.fontSize = savedSize + "px";
+    }
+
+    darkMode.addEventListener("change", () => {
+      setCookie("darkMode", darkMode.checked);
+      document.body.classList.toggle("dark", darkMode.checked);
+    });
+
+    textSize.addEventListener("input", () => {
+      setCookie("textSize", textSize.value);
+      document.body.style.fontSize = textSize.value + "px";
+    });
+  </script>
+
+</body>
 </html>
