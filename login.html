@@ -4,28 +4,94 @@
   <meta charset="UTF-8">
   <title>Login - YANS</title>
 
+  <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="firebase.js"></script>
-  <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- Global shared files -->
   <link rel="stylesheet" href="global.css">
   <script src="global.js" defer></script>
 
   <style>
     body {
-      background: #111;
-      color: white;
+      margin: 0;
+      overflow-x: hidden;
       font-family: 'Yu Gothic UI', sans-serif;
-      padding: 20px;
+      color: white;
+      background: black;
+    }
+
+    /* STARFIELD */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -5;
+    }
+
+    /* NEBULA */
+    .nebula {
+      position: fixed;
+      top: 0; left: 0;
+      width: 200%;
+      height: 200%;
+      background-size: cover;
+      opacity: 0.35;
+      animation: drift 60s linear infinite;
+      z-index: -4;
+      filter: blur(20px);
+    }
+
+    #nebula1 {
+      background-image: url('images/nebula_blue_1.png');
+      animation-duration: 90s;
+    }
+
+    #nebula2 {
+      background-image: url('images/nebula_blue_2.png');
+      animation-duration: 120s;
+      opacity: 0.25;
+    }
+
+    @keyframes drift {
+      from { transform: translate(-10%, -10%) scale(1.1); }
+      to   { transform: translate(-30%, -30%) scale(1.1); }
+    }
+
+    /* GLASS PANEL */
+    .glass {
+      background: rgba(0, 20, 40, 0.45);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(120,160,255,0.25);
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,100,255,0.35);
+      padding: 25px;
+      width: 350px;
+      margin: 120px auto 0 auto;
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+      text-shadow: 0 0 15px #3fa9ff;
+      margin-bottom: 20px;
     }
 
     input {
       padding: 10px;
-      width: 250px;
-      margin: 5px 0;
-      background: #222;
-      border: 1px solid #444;
+      width: 260px;
+      margin: 8px 0;
+      background: rgba(0, 20, 40, 0.4);
+      border: 1px solid rgba(120,160,255,0.3);
+      border-radius: 8px;
       color: white;
     }
 
@@ -36,40 +102,39 @@
       color: white;
       cursor: pointer;
       margin-top: 10px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.2s;
     }
 
     button:hover {
-      background: #0f5bb5;
+      transform: scale(1.05);
+      background: #1f86ff;
     }
 
     hr {
+      border: 1px solid rgba(120,160,255,0.2);
       margin: 20px 0;
-      border: 1px solid #333;
-    }
-
-    .continue-box {
-      margin-top: 20px;
-      padding-top: 10px;
-      border-top: 1px solid #333;
-    }
-
-    .continue-label {
-      color: #aaa;
-      font-size: 14px;
-      margin-bottom: 10px;
     }
 
     .provider-btn {
       width: 260px;
-      background: #222;
-      border: 1px solid #444;
+      background: rgba(0, 20, 40, 0.4);
+      border: 1px solid rgba(120,160,255,0.3);
       color: white;
       padding: 10px;
-      margin: 5px 0;
+      margin: 5px auto;
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .provider-btn:hover {
+      transform: scale(1.05);
+      background: rgba(0, 40, 80, 0.6);
     }
 
     .provider-btn img {
@@ -77,29 +142,38 @@
       height: 20px;
     }
 
-    .provider-btn:hover {
-      background: #2d2d2d;
+    .continue-label {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 
 <body>
-  <h2>Login</h2>
 
-  <form onsubmit="login(); return false;">
-    <input id="email" type="email" placeholder="Email"><br>
-    <input id="password" type="password" placeholder="Password"><br><br>
-    <button type="submit">Login</button>
-  </form>
+  <!-- STARFIELD + NEBULA -->
+  <canvas id="starfield"></canvas>
+  <div id="nebula1" class="nebula"></div>
+  <div id="nebula2" class="nebula"></div>
 
-  <hr>
+  <div class="glass">
+    <h2>Login</h2>
 
-  <div class="continue-box">
+    <form onsubmit="login(); return false;">
+      <input id="email" type="email" placeholder="Email"><br>
+      <input id="password" type="password" placeholder="Password"><br><br>
+      <button type="submit">Login</button>
+    </form>
+
+    <hr>
+
     <p>
       <b>CAUTION:</b>
-      If you continue with GitHub or Google, you will NOT have a password! You will be required to sign in with these options until you make a new account.
+      If you continue with GitHub or Google, you will NOT have a password!  
+      You will be required to sign in with these options until you make a new account.
     </p>
-    <div></div>
+
     <p class="continue-label">Continue with</p>
 
     <button class="provider-btn" onclick="loginWithGoogle()">
@@ -137,5 +211,6 @@
         .catch(err => alert(err.message));
     }
   </script>
+
 </body>
 </html>
