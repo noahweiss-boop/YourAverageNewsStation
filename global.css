@@ -44,7 +44,7 @@
     #000 40px
   );
   overflow: hidden;
-  height: 40px;
+  height: 0px;
   position: relative;
   margin-bottom: 20px;
 }
