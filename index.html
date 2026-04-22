@@ -1,67 +1,193 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Bot Prevention - YANS</title>
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Prevention - YANS</title>
 
-    <!-- Google reCAPTCHA v2 Checkbox -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
+  <!-- reCAPTCHA -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-    <style>
-      body {
-        background: #111;
-        color: white;
-        font-family: 'Yu Gothic UI', sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
-      #box {
-        background: #1a1a1a;
-        padding: 30px;
-        border: 1px solid #333;
-        text-align: center;
-      }
-      button {
-        padding: 10px 20px;
-        background: #1974D2;
-        border: none;
-        color: white;
-        cursor: pointer;
-      }
-    </style>
-  </head>
+  <link rel="icon" type="image/svg+xml" href="images/YANS_LOGO_SOLO.svg">
 
-  <body>
-    <div id="box">
-      <h2>Please verify you're human</h2>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Yu Gothic UI', sans-serif;
+      color: white;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-      <form id="verifyForm">
-        <div class="g-recaptcha" data-sitekey="6LfoSsAsAAAAAFim7tXcUOItHRB1LIrhpZVINApA" data-callback="verified"></div>
-        <br>
-        <button type="submit">Continue</button>
-      </form>
-    </div>
+    /* STARFIELD */
+    #starfield {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -5;
+    }
 
-    <script>
-      function verified() {
-        // Set a cookie so the user doesn't get challenged again
-        document.cookie = "yansHuman=1; path=/; max-age=86400";
+    /* NEBULA */
+    .nebula {
+      position: fixed;
+      top: 0; left: 0;
+      width: 200%;
+      height: 200%;
+      background-size: cover;
+      opacity: 0.35;
+      animation: drift 60s linear infinite;
+      z-index: -4;
+      filter: blur(20px);
+    }
 
-        // Redirect to your real site
-        window.location.href = "home.html";
-      }
+    #nebula1 {
+      background-image: url('images/nebula_blue_1.png');
+      animation-duration: 90s;
+    }
 
-      // Prevent clicking Continue without solving CAPTCHA
-      document.getElementById("verifyForm").addEventListener("submit", function(e) {
-        if (grecaptcha.getResponse().length === 0) {
-          e.preventDefault();
-          alert("Please complete the CAPTCHA first.");
-        }
+    #nebula2 {
+      background-image: url('images/nebula_blue_2.png');
+      animation-duration: 120s;
+      opacity: 0.25;
+    }
+
+    @keyframes drift {
+      from { transform: translate(-10%, -10%) scale(1.1); }
+      to   { transform: translate(-30%, -30%) scale(1.1); }
+    }
+
+    /* WIND PARTICLES */
+    .wind {
+      position: fixed;
+      top: -10vh;
+      width: 2px;
+      height: 40vh;
+      background: rgba(150,200,255,0.4);
+      filter: blur(2px);
+      animation: windFall 2s linear forwards;
+      z-index: -3;
+    }
+
+    @keyframes windFall {
+      to { transform: translateY(120vh); opacity: 0; }
+    }
+
+    /* GLASS PANEL */
+    .glass {
+      background: rgba(0, 20, 40, 0.45);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(120,160,255,0.25);
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,100,255,0.35);
+      padding: 30px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #1974D2;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      background: #1f86ff;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- STARFIELD + NEBULA -->
+  <canvas id="starfield"></canvas>
+  <div id="nebula1" class="nebula"></div>
+  <div id="nebula2" class="nebula"></div>
+
+  <div id="box" class="glass">
+    <h2>Please verify you're human</h2>
+
+    <form id="verifyForm">
+      <div class="g-recaptcha"
+           data-sitekey="6LfoSsAsAAAAAFim7tXcUOItHRB1LIrhpZVINApA"
+           data-callback="verified"></div>
+      <br>
+      <button type="submit">Continue</button>
+    </form>
+  </div>
+
+  <script>
+    /* STARFIELD */
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.onresize = resize;
+
+    const stars = [];
+    for (let i = 0; i < 400; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2,
+        speed: Math.random() * 0.2 + 0.05
       });
-    </script>
-  </body>
+    }
+
+    function animateStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "white";
+
+      for (let s of stars) {
+        ctx.globalAlpha = Math.random() * 0.8 + 0.2;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+        s.y += s.speed;
+        if (s.y > canvas.height) s.y = 0;
+      }
+
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    /* WIND PARTICLES */
+    function spawnWind() {
+      const w = document.createElement("div");
+      w.className = "wind";
+      w.style.left = Math.random() * 100 + "vw";
+      document.body.appendChild(w);
+      setTimeout(() => w.remove(), 2500);
+    }
+
+    setInterval(() => {
+      if (Math.random() < 0.4) spawnWind();
+    }, 800);
+
+    /* CAPTCHA LOGIC */
+    function verified() {
+      document.cookie = "yansHuman=1; path=/; max-age=86400";
+      window.location.href = "home.html";
+    }
+
+    document.getElementById("verifyForm").addEventListener("submit", function(e) {
+      if (grecaptcha.getResponse().length === 0) {
+        e.preventDefault();
+        alert("Please complete the CAPTCHA first.");
+      }
+    });
+  </script>
+
+</body>
 </html>
